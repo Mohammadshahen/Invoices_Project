@@ -69,20 +69,13 @@ class InvoiceController extends Controller
 
         if ($request->hasFile('pic')) {
 
-            $image = $request->file('pic');
-            $file_name = $image->getClientOriginalName();
-            $invoice_number = $request->invoice_number;
-
-            $attachments = new InvoiceAttachments();
-            $attachments->file_name = $file_name;
-            $attachments->invoice_number = $invoice_number;
-            $attachments->Created_by = Auth::user()->name;
-            $attachments->invoice_id = $invoice_id;
-            $attachments->save();
-
-            // move pic
-            $imageName = $request->pic->getClientOriginalName();
-            $request->pic->move(public_path('Attachments/' . $invoice_number), $imageName);
+            $file_name = $request->file('pic')->getClientOriginalName();
+            $path = $request->file('pic')->storeAs('Attachment/' . $invoice_id ,$file_name,'public');
+            
+            InvoiceAttachments::create([
+                'invoice_id' => $invoice_id,
+                'file_path' => $path,
+            ]);
         }
     }
 

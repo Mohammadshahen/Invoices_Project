@@ -4,13 +4,14 @@ namespace App\Models\Invoices;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class InvoiceAttachments extends Model
 {
     protected $fillable = [
         'invoice_id',
         'user_id',
-        'file_name',
+        'file_path',
     ];  
 
 
@@ -22,5 +23,13 @@ class InvoiceAttachments extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+        protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->user_id = Auth::id();
+        });
     }
 }

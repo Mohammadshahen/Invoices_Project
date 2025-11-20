@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('invoice_attachments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('invoice_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('file_name', 999);
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('file_path', 999);
             $table->timestamps();
         });
     }
