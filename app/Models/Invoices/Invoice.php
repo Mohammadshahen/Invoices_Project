@@ -5,9 +5,11 @@ namespace App\Models\Invoices;
 use App\Models\Product;
 use App\Models\section;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Invoice extends Model
 {
+    use SoftDeletes;
     protected $fillable = [
         'invoice_number',
         'invoice_date',
@@ -34,5 +36,13 @@ class Invoice extends Model
     public function section()
     {
         return $this->belongsTo(section::class);
+    }
+    public function detail()
+    {
+        return $this->hasMany(InvoiceDetail::class);
+    }
+    public function attachment()
+    {
+        return $this->hasMany(InvoiceAttachments::class);
     }
 }

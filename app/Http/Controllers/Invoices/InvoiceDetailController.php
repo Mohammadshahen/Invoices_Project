@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Invoices;
 
 use App\Http\Controllers\Controller;
+use App\Models\Invoices\Invoice;
 use Illuminate\Http\Request;
 
 class InvoiceDetailController extends Controller
@@ -36,7 +37,8 @@ class InvoiceDetailController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $invoice = Invoice::find($id);
+        return view('invoices.details_invoice', compact('invoice'));
     }
 
     /**

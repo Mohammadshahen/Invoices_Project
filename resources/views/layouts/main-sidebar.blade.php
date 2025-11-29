@@ -34,9 +34,9 @@
 							<li><a class="slide-item" href="{{ Route('invoices.index') }}">قائمة الفواتير</a></li>
 							<li><a class="slide-item" href="{{ url('/' . $page='chart-flot') }}">الفواتير المدفوعة</a></li>
 							<li><a class="slide-item" href="{{ url('/' . $page='chart-chartjs') }}">الفواتير الغير مدفوعة</a></li>
-							{{-- <li><a class="slide-item" href="{{ url('/' . $page='chart-echart') }}">Echart</a></li>
-							<li><a class="slide-item" href="{{ url('/' . $page='chart-sparkline') }}">Sparkline</a></li>
-							<li><a class="slide-item" href="{{ url('/' . $page='chart-peity') }}">Chart-peity</a></li> --}}
+							<li><a class="slide-item" href="{{ url('/' . $page='chart-echart') }}">الفواتير المدفوعة جزئيا</a></li>
+							<li><a class="slide-item" href="{{ Route('archive') }}">ارشيف الفواتير</a></li>
+							{{-- <li><a class="slide-item" href="{{ url('/' . $page='chart-peity') }}">Chart-peity</a></li> --}}
 						</ul>
 					</li>
 					{{-- <li class="slide">

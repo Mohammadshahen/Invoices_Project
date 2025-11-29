@@ -1,6 +1,6 @@
 @extends('layouts.master')
 @section('title')
-    قائمة الفواتير
+    ارشيف الفواتير
 @stop
 @section('css')
     <!-- Internal Data table css -->
@@ -18,7 +18,7 @@
     <div class="breadcrumb-header justify-content-between">
         <div class="my-auto">
             <div class="d-flex">
-                <h4 class="content-title mb-0 my-auto">الفواتير</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/ قائمة
+                <h4 class="content-title mb-0 my-auto">الفواتير</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/ أرشيف
                     الفواتير</span>
             </div>
         </div>
@@ -28,7 +28,7 @@
 @endsection
 @section('content')
 
-    @if ($errors->any())
+@if ($errors->any())
         <div class="alert alert-danger">
             <ul>
                 @foreach ($errors->all() as $error)
@@ -37,10 +37,17 @@
             </ul>
         </div>
     @endif
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
+
+    @if (session()->has('archive_invoice'))
+        <script>
+            window.onload = function() {
+                notif({
+                    msg: "تم أرشفة الفاتورة بنجاح",
+                    type: "success"
+                })
+            }
+
+        </script>
     @endif
 
     @if (session()->has('delete_invoice'))
@@ -55,50 +62,19 @@
         </script>
     @endif
 
-
-    @if (session()->has('Status_Update'))
-        <script>
-            window.onload = function() {
-                notif({
-                    msg: "تم تحديث حالة الدفع بنجاح",
-                    type: "success"
-                })
-            }
-
-        </script>
-    @endif
-
-    @if (session()->has('restore_invoice'))
-        <script>
-            window.onload = function() {
-                notif({
-                    msg: "تم استعادة الفاتورة بنجاح",
-                    type: "success"
-                })
-            }
-
-        </script>
-    @endif
-
-
     <!-- row -->
     <div class="row">
         <!--div-->
         <div class="col-xl-12">
             <div class="card mg-b-20">
                 <div class="card-header pb-0">
-                        <a href="{{Route('invoices.create')}}" class="modal-effect btn btn-sm btn-primary" style="color:white"><i
-                                class="fas fa-plus"></i>&nbsp; اضافة فاتورة</a>
+                    <div class="d-flex justify-content-between">
 
-                    @can('تصدير EXCEL')
-                        <a class="modal-effect btn btn-sm btn-primary" href="{{ url('export_invoices') }}"
-                            style="color:white"><i class="fas fa-file-download"></i>&nbsp;تصدير اكسيل</a>
-                    @endcan
-
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table id="example1" class="table key-buttons text-md-nowrap" data-page-length='50'style="text-align: center">
+                        <table id="example1" class="table key-buttons text-md-nowrap" data-page-length='50'>
                             <thead>
                                 <tr>
                                     <th class="border-bottom-0">#</th>
@@ -131,16 +107,16 @@
                                         <td>{{ $invoice->due_date }}</td>
                                         <td>{{ $invoice->product->product_name }}</td>
                                         <td><a
-                                                href="{{ Route('invoice_detail.show',[$invoice->id]) }}">{{ $invoice->section->section_name }}</a>
+                                                href="{{ url('InvoicesDetails') }}/{{ $invoice->id }}">{{ $invoice->section->section_name }}</a>
                                         </td>
                                         <td>{{ $invoice->discount }}</td>
                                         <td>{{ $invoice->rate_vat }}</td>
                                         <td>{{ $invoice->value_vat }}</td>
                                         <td>{{ $invoice->total }}</td>
                                         <td>
-                                            @if ($invoice->Value_Status == 1)
+                                            @if ($invoice->value_status == 1)
                                                 <span class="text-success">{{ $invoice->status }}</span>
-                                            @elseif($invoice->Value_Status == 2)
+                                            @elseif($invoice->value_status == 2)
                                                 <span class="text-danger">{{ $invoice->status }}</span>
                                             @else
                                                 <span class="text-warning">{{ $invoice->status }}</span>
@@ -155,31 +131,14 @@
                                                     class="btn ripple btn-primary btn-sm" data-toggle="dropdown"
                                                     type="button">العمليات<i class="fas fa-caret-down ml-1"></i></button>
                                                 <div class="dropdown-menu tx-13">
-                                                    
-                                                        <a class="dropdown-item"
-                                                            href=" {{ route('invoices.edit',[$invoice->id]) }}">تعديل
-                                                            الفاتورة</a>
-                                                    
-
-                                                    
-                                                        <a class="dropdown-item" href="#" data-invoice_id="{{ $invoice->id }}"
-                                                            data-toggle="modal" data-target="#delete_invoice"><i
-                                                                class="text-danger fas fa-trash-alt"></i>&nbsp;&nbsp;حذف
-                                                            الفاتورة</a>
-                                                    
-
-                                                        <a class="dropdown-item"
-                                                            href="{{ route('status',$invoice->id) }}"><i
-                                                                class=" text-success fas
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    fa-money-bill"></i>&nbsp;&nbsp;تغير
-                                                            حالة
-                                                            الدفع</a>
-
-
-                                                        <a class="dropdown-item" href="Print_invoice/{{ $invoice->id }}"><i
-                                                                class="text-success fas fa-print"></i>&nbsp;&nbsp;طباعة
-                                                            الفاتورة
-                                                        </a>
+                                                    <a class="dropdown-item" href="#" data-invoice_id="{{ $invoice->id }}"
+                                                        data-toggle="modal" data-target="#Transfer_invoice"><i
+                                                            class="text-warning fas fa-exchange-alt"></i>&nbsp;&nbsp;نقل الي
+                                                        الفواتير</a>
+                                                    <a class="dropdown-item" href="#" data-invoice_id="{{ $invoice->id }}"
+                                                        data-toggle="modal" data-target="#delete_invoice"><i
+                                                            class="text-danger fas fa-trash-alt"></i>&nbsp;&nbsp;حذف
+                                                        الفاتورة</a>
                                                 </div>
                                             </div>
 
@@ -207,11 +166,13 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                     <form id="deleteForm" method="post">
-                        {{ method_field('delete') }}
-                        {{ csrf_field() }}
+                        @method('POST')
+                        @csrf
                 </div>
                 <div class="modal-body">
                     هل انت متاكد من عملية الحذف ؟
+                    <input type="hidden" name="invoice_id" id="invoice_id" value="">
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">الغاء</button>
@@ -222,25 +183,23 @@
         </div>
     </div>
 
-
-    <!-- ارشيف الفاتورة -->
+    <!--الغاء الارشفة-->
     <div class="modal fade" id="Transfer_invoice" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">ارشفة الفاتورة</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">الغاء ارشفة الفاتورة</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                    <form action="{{ route('invoices.destroy', 'test') }}" method="post">
-                        {{ method_field('delete') }}
+                    <form id="sss" method="post">
+                        {{ method_field('patch') }}
                         {{ csrf_field() }}
                 </div>
                 <div class="modal-body">
-                    هل انت متاكد من عملية الارشفة ؟
+                    هل انت متاكد من عملية الغاء الارشفة ؟
                     <input type="hidden" name="invoice_id" id="invoice_id" value="">
-                    <input type="hidden" name="id_page" id="id_page" value="2">
 
                 </div>
                 <div class="modal-footer">
@@ -290,7 +249,7 @@
             var modal = $(this)
             modal.find('.modal-body #invoice_id').val(invoice_id);
             var form = modal.find('#deleteForm');
-			form.attr('action', '{{ url("invoices") }}/' + invoice_id)
+            form.attr('action', "{{ url('force_destroy') }}/" + invoice_id);
         })
 
     </script>
@@ -301,14 +260,10 @@
             var invoice_id = button.data('invoice_id')
             var modal = $(this)
             modal.find('.modal-body #invoice_id').val(invoice_id);
+            var form = modal.find('#sss');
+            form.attr('action', "{{ url('restore') }}/" + invoice_id);
         })
 
     </script>
-
-
-
-
-
-
 
 @endsection
