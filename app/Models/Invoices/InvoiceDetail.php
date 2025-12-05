@@ -3,7 +3,7 @@
 namespace App\Models\Invoices;
 
 use App\Models\Product;
-use App\Models\section;
+use App\Models\Section;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -33,7 +33,7 @@ class InvoiceDetail extends Model
 
     public function section()
     {
-        return $this->belongsTo(section::class);
+        return $this->belongsTo(Section::class);
     }
 
     public function user()

@@ -3,7 +3,7 @@
 namespace App\Models\Invoices;
 
 use App\Models\Product;
-use App\Models\section;
+use App\Models\Section;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -35,7 +35,7 @@ class Invoice extends Model
 
     public function section()
     {
-        return $this->belongsTo(section::class);
+        return $this->belongsTo(Section::class);
     }
     public function detail()
     {

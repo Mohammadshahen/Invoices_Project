@@ -2,21 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\section;
-use Error;
-use Illuminate\Contracts\Session;
-use Illuminate\Http\Request;
+use App\Http\Requests\Section\StoreSectionRequest;
+use App\Http\Requests\Section\UpdateSectionRequest;
+use App\Models\Section;
+use Illuminate\Routing\Controller;
 
 use function Pest\Laravel\session;
 
 class SectionController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:الاقسام', ['only' => ['index']]);
+        $this->middleware('permission:اضافة قسم', ['only' => ['store']]);
+        $this->middleware('permission:تعديل قسم', ['only' => ['update']]);
+        $this->middleware('permission:حذف قسم', ['only' => ['destroy']]);
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $sections = section::all();
+        $sections = Section::all();
         return view('sections.sections',compact('sections'));
     }
 
@@ -31,20 +38,12 @@ class SectionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreSectionRequest $request)
     {
-        $request->validate([
-            "section_name" => 'required|unique:sections',
-            "description" => 'required'
-        ],[
-            'section_name.required' => 'يجب ادخال اسم القسم',
-            'section_name.unique' =>'القسم موجود بالفعل',
-            'description.required' =>'يجب ادخال وصف للقسم'
-        ]);
-
-        section::create([
-            "section_name" => $request->section_name,
-            "description" => $request->description,
+        $data = $request->validated();
+        Section::create([
+            "section_name" => $data['section_name'],
+            "description" => $data['description'],
         ]);
         return redirect("/sections")->with('success','تمت اضافة القسم');
     }
@@ -52,7 +51,7 @@ class SectionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(section $section)
+    public function show(Section $section)
     {
         //
     }
@@ -60,7 +59,7 @@ class SectionController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(section $section)
+    public function edit(Section $section)
     {
         //
     }
@@ -68,21 +67,12 @@ class SectionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(UpdateSectionRequest $request, Section $section)
     {
-        $request->validate([
-            "section_name" => 'required|unique:sections,section_name,' . $id,
-            "description" => 'required'
-        ],[
-            'section_name.required' => 'يجب ادخال اسم القسم',
-            'section_name.unique' =>'القسم موجود بالفعل',
-            'description.required' =>'يجب ادخال وصف للقسم'
-        ]);
-
-        $section = section::find($id);
+        $data = $request->validated();
         $section->update([
-            'section_name' => $request->section_name,
-            'description' => $request->description,
+            'section_name' => $data['section_name'],
+            'description' => $data['description'],
         ]);
         return redirect("/sections")->with('edit','تمت تعديل القسم');
     }
@@ -90,9 +80,8 @@ class SectionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request, $id)
+    public function destroy(Section $section)
     {
-        $section = section::find($id);
         $section->delete();
         return redirect("/sections")->with('delete','تمت حذف القسم');        
     }

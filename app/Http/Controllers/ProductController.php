@@ -2,19 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\product;
-use App\Models\section;
-use Illuminate\Http\Request;
-use phpDocumentor\Reflection\DocBlock\Tags\Return_;
+use App\Http\Requests\Product\StoreProductRequest;
+use App\Http\Requests\Product\UpdateProductRequest;
+use App\Models\Product;
+use App\Models\Section;
+use Illuminate\Routing\Controller;
 
 class ProductController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:المنتجات',['only' => ['index']]);
+        $this->middleware('permission:اضافة منتج',['only' => ['store']]);
+        $this->middleware('permission:تعديل منتج',['only' => ['update']]);
+        $this->middleware('permission:حذف منتج',['only' => ['destroy']]);
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $sections = section::all();
+        $sections = Section::all();
         $products = Product::all();
         return view("products.products" , compact('sections','products'));
     }
@@ -30,22 +38,13 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreProductRequest $request)
     {
-        $request->validate([
-            'product_name' => 'required|unique:products',
-            'section_id' => 'required|exists:sections,id'
-        ],[
-            'product_name.required' => 'يجب ادخال اسم المنتج',
-            'product_name.unique' => 'المنتج موجود بالفعل',
-            'section_id.required' => 'يجب تحديد القسم',
-            'section_id.exists' => 'القسم غير موجود في قائمة الاقسام',
-        ]);
-
+        $data = $request->validated();
         Product::create([
-            'product_name' => $request->product_name,
-            'description' => $request->description,
-            'section_id' => $request->section_id,
+            'product_name' => $data['product_name'],
+            'description' => $data['description'],
+            'section_id' => $data['section_id'],
         ]);
         
         return redirect('/products')->with('success','تمت اضافة المنتج');
@@ -70,34 +69,22 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(UpdateProductRequest $request,Product $product)
     {
-        $request->validate([
-            'product_name' => 'required|unique:products,product_name,'. $id,
-            'section_id' => 'required|exists:sections,id'
-        ],[
-            'product_name.required' => 'يجب ادخال اسم المنتج',
-            'product_name.unique' => 'المنتج موجود بالفعل',
-            'section_id.required' => 'يجب تحديد القسم',
-            'section_id.exists' => 'القسم غير موجود في قائمة الاقسام',
-        ]);
-
-        $product = Product::find($id);
+        $date = $request->validated();
         $product->update([
-            'product_name' => $request->product_name,
-            'description' => $request->description,
-            'section_id' => $request->section_id,
+            'product_name' => $date['product_name'],
+            'description' => $date['description'],
+            'section_id' => $date['section_id'],
         ]);
-        
         return redirect('/products')->with('edit','تمت تعديل المنتج');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request,$id)
+    public function destroy(Product $product)
     {
-        $product = Product::find($id);
         $product->delete();
         return redirect('/products')->with('delete','تمت حذف المنتج');
     }

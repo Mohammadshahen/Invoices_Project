@@ -3,13 +3,20 @@
 namespace App\Http\Controllers\Invoices;
 
 use App\Http\Controllers\Controller;
+use App\Models\Invoices\Invoice;
 use App\Models\Invoices\InvoiceAttachments;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller as RoutingController;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\In;
 
-class InvoiceAttachmentsController extends Controller
+class InvoiceAttachmentsController extends RoutingController
 {
+    public function __construct()
+    {
+        $this->middleware('permission:اضافة مرفق', ['only' => ['store']]);
+        $this->middleware('permission:حذف المرفق', ['only' => ['destroy']]);
+    }
     /**
      * Display a listing of the resource.
      */
@@ -31,7 +38,22 @@ class InvoiceAttachmentsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // return $request;
+        $invoice = Invoice::findOrFail($request->invoice_id);
+         $file = $request->file('pic');
+                $originalName = $file->getClientOriginalName();
+                
+                // إنشاء اسم فريد للملف
+                $fileName = time() . '_' . str_replace(' ', '_', $originalName);
+                
+                // حفظ الملف
+                $path = $file->storeAs('Attachment/' . $invoice->id, $fileName, 'public');
+                
+                // إنشاء سجل المرفق
+                $invoice->attachment()->create([
+                    'file_path' => $path,
+                ]);
+        return redirect()->back()->with('success', 'تم اضافة المرفق بنجاح');
     }
 
     /**
@@ -62,8 +84,9 @@ class InvoiceAttachmentsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(InvoiceAttachments $attachment)
+    public function destroy(string $id)
     {
+        $attachment = InvoiceAttachments::find($id);
         Storage::disk('public')->delete( $attachment->file_path );
         $attachment->delete();
         return redirect()->back()->with('success', 'تم حف المرفق بنجاح');

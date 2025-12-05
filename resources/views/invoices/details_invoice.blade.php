@@ -197,18 +197,17 @@
                                             <div class="card card-statistics">
                                                 @can('اضافة مرفق')
                                                     <div class="card-body">
-                                                        <p class="text-danger">* صيغة المرفق pdf, jpeg ,.jpg , png </p>
+                                                        <p class="text-danger">* صيغة المرفق jpeg , jpg , png </p>
                                                         <h5 class="card-title">اضافة مرفقات</h5>
-                                                        <form method="post" action="{{ url('/InvoiceAttachments') }}"
+                                                        <form method="post" action="{{ url('/invoice_attachment') }}"
                                                             enctype="multipart/form-data">
-                                                            {{ csrf_field() }}
+                                                            @method('POST')
+                                                            @csrf
                                                             <div class="custom-file">
                                                                 <input type="file" class="custom-file-input" id="customFile"
-                                                                    name="file_name" required>
-                                                                <input type="hidden" id="customFile" name="invoice_number"
-                                                                    value="{{ $invoices->invoice_number }}">
+                                                                    name="pic" required>
                                                                 <input type="hidden" id="invoice_id" name="invoice_id"
-                                                                    value="{{ $invoices->id }}">
+                                                                    value="{{ $invoice->id }}">
                                                                 <label class="custom-file-label" for="customFile">حدد
                                                                     المرفق</label>
                                                             </div><br><br>
@@ -253,11 +252,12 @@
                                                                                 class="fas fa-download"></i>&nbsp;
                                                                             تحميل</a>
 
-                                                      
+                                                                        @can('حذف المرفق')
                                                                             <button class="btn btn-outline-danger btn-sm"
                                                                                 data-toggle="modal"
                                                                                 data-id_file="{{ $attachment->id }}"
-                                                                                data-target="#delete_file">حذف</button>                     
+                                                                                data-target="#delete_file">حذف</button> 
+                                                                        @endcan                    
                                                                
 
                                                                     </td>
@@ -297,8 +297,7 @@
                 </div>
                 <form id="deleteForm" method="post">
                     @method('DELETE')
-
-                    {{ csrf_field() }}
+                    @csrf
                     <div class="modal-body">
                         <p class="text-center">
                         <h6 style="color:red"> هل انت متاكد من عملية حذف المرفق ؟</h6>

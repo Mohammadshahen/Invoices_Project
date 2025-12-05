@@ -154,7 +154,9 @@
 
                 <div class="d-flex justify-content-between">
                     <div class="col-sm-6 col-md-4 col-xl-3 mg-t-20">
+                    @can('اضافة منتج')
                         <a class="modal-effect btn btn-outline-primary btn-block" data-effect="effect-sign" data-toggle="modal" href="#exampleModal"><i class="fas fa-plus"></i> اضافة منتج </a>
+                    @endcan    
                         @if ($errors->any())
                             <div class="alert alert-danger">
                                 <ul>
@@ -195,14 +197,17 @@
                                     <td>{{ $product->section->section_name }}</td>
                                     <td>{{$product->description}}</td>
                                     <td>
+                                    @can('تعديل منتج')
                                         <a class="modal-effect btn btn-sm btn-info" data-effect="effect-scale"
                                         data-id="{{ $product->id }}" data-section_id="{{ $product->section_id }}" data-product_name="{{ $product->product_name }}"
                                         data-description="{{ $product->description }}" data-toggle="modal" href="#exampleModal2"
                                         title="تعديل"><i class="las la-pen"></i></a>
-
+                                    @endcan
+                                    @can('حذف منتج')
                                         <a class="modal-effect btn btn-sm btn-danger" data-effect="effect-scale"
                                         data-id="{{ $product->id }}" data-product_name="{{ $product->product_name }}" data-toggle="modal"
                                         href="#modaldemo9" title="حذف"><i class="las la-trash"></i></a>
+                                    @endcan
                                     </td>
                                 </tr>
                             @endforeach

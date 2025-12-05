@@ -1,6 +1,6 @@
 @extends('layouts.master')
 @section('title')
-    قائمة الفواتير
+    الفواتير المدفوعة
 @stop
 @section('css')
     <!-- Internal Data table css -->
@@ -18,8 +18,9 @@
     <div class="breadcrumb-header justify-content-between">
         <div class="my-auto">
             <div class="d-flex">
-                <h4 class="content-title mb-0 my-auto">الفواتير</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/ قائمة
-                    الفواتير</span>
+                <h4 class="content-title mb-0 my-auto">الفواتير</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/ الفواتير
+                    المدفوعة
+                </span>
             </div>
         </div>
 
@@ -27,21 +28,6 @@
     <!-- breadcrumb -->
 @endsection
 @section('content')
-
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
 
     @if (session()->has('delete_invoice'))
         <script>
@@ -56,7 +42,7 @@
     @endif
 
 
-    @if (session()->has('Status_Update'))
+    @if (session()->has('status_Update'))
         <script>
             window.onload = function() {
                 notif({
@@ -68,38 +54,20 @@
         </script>
     @endif
 
-    @if (session()->has('restore_invoice'))
-        <script>
-            window.onload = function() {
-                notif({
-                    msg: "تم استعادة الفاتورة بنجاح",
-                    type: "success"
-                })
-            }
-
-        </script>
-    @endif
-
-
     <!-- row -->
     <div class="row">
         <!--div-->
         <div class="col-xl-12">
             <div class="card mg-b-20">
                 <div class="card-header pb-0">
-                        @can('اضافة فاتورة')
-                        <a href="{{Route('invoices.create')}}" class="modal-effect btn btn-sm btn-primary" style="color:white"><i
+                    <div class="d-flex justify-content-between">
+                        <a href="invoices/create" class="modal-effect btn btn-sm btn-primary" style="color:white"><i
                                 class="fas fa-plus"></i>&nbsp; اضافة فاتورة</a>
-                        @endcan
-                    @can('تصدير EXCEL')
-                        <a class="modal-effect btn btn-sm btn-primary" href="{{ url('export_invoices') }}"
-                            style="color:white"><i class="fas fa-file-download"></i>&nbsp;تصدير اكسيل</a>
-                    @endcan
-
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table id="example1" class="table key-buttons text-md-nowrap" data-page-length='50'style="text-align: center">
+                        <table id="example1" class="table key-buttons text-md-nowrap" data-page-length='50'>
                             <thead>
                                 <tr>
                                     <th class="border-bottom-0">#</th>
@@ -156,7 +124,7 @@
                                                     class="btn ripple btn-primary btn-sm" data-toggle="dropdown"
                                                     type="button">العمليات<i class="fas fa-caret-down ml-1"></i></button>
                                                 <div class="dropdown-menu tx-13">
-                                                        @can('تعديل الفاتورة')
+                                                    @can('تعديل الفاتورة')
                                                         <a class="dropdown-item"
                                                             href=" {{ route('invoices.edit',[$invoice->id]) }}">تعديل
                                                             الفاتورة</a>
@@ -302,11 +270,6 @@
         })
 
     </script>
-
-
-
-
-
 
 
 @endsection
